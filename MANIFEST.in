@@ -1,0 +1,6 @@
+include versioneer.py
+include pystellardb/_version.py
+include README.rst
+include LICENSE
+graft pystellardb
+recursive-exclude * *.py[co]
