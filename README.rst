@@ -23,6 +23,7 @@ PLAIN Mode (No security is configured)
 
     print cur.fetchall()
 
+
 LDAP Mode
 ------
 .. code-block:: python
@@ -36,6 +37,7 @@ LDAP Mode
 
     print cur.fetchall()
 
+
 Kerberos Mode
 ------
 .. code-block:: python
@@ -48,6 +50,7 @@ Kerberos Mode
     cur.execute('match p = (a)-[f]->(b) return a,f,b limit 1')
 
     print cur.fetchall()
+
 
 Execute Hive Query
 ------
