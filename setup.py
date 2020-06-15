@@ -29,7 +29,7 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     description="Python interface to StellarDB",
     long_description=long_description,
-    url='https://github.com/dropbox/PyHive',
+    url='',
     author="Zhiping Wang",
     author_email="zhiping.wang@transwarp.io",
     license="Apache License, Version 2.0",
