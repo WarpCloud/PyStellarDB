@@ -64,6 +64,29 @@ Execute Hive Query
     cur.execute('SELECT * FROM default.abc limit 10')
 
 
+Dependencies
+============
+
+Required:
+- Python 2.7+ / Python 3
+
+System SASL
+------------
+Different systems require different packages to be installed to enable SASL support
+in Impyla. Some examples of how to install the packages on different distributions
+follow.
+
+Ubuntu:
+.. code-block:: bash
+    apt-get install libsasl2-dev libsasl2-2 libsasl2-modules-gssapi-mit
+    apt-get install python-dev gcc              #Update python and gcc if needed
+
+RHEL/CentOS:
+.. code-block:: bash
+    yum install cyrus-sasl-md5 cyrus-sasl-plain cyrus-sasl-gssapi cyrus-sasl-devel
+    yum install gcc-c++ python-devel.x86_64     #Update python and gcc if needed
+
+
 Requirements
 ============
 
@@ -73,7 +96,6 @@ Install using
 
 PyHive works with
 
-- Python 2.7 / Python 3
 - For Hive: `HiveServer2 <https://cwiki.apache.org/confluence/display/Hive/Setting+up+HiveServer2>`_ daemon
 
 
