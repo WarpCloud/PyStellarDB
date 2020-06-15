@@ -68,6 +68,7 @@ Dependencies
 ============
 
 Required:
+
 - Python 2.7+ / Python 3
 
 System SASL
@@ -77,11 +78,13 @@ in Impyla. Some examples of how to install the packages on different distributio
 follow.
 
 Ubuntu:
+
 .. code-block:: bash
     apt-get install libsasl2-dev libsasl2-2 libsasl2-modules-gssapi-mit
     apt-get install python-dev gcc              #Update python and gcc if needed
 
 RHEL/CentOS:
+
 .. code-block:: bash
     yum install cyrus-sasl-md5 cyrus-sasl-plain cyrus-sasl-gssapi cyrus-sasl-devel
     yum install gcc-c++ python-devel.x86_64     #Update python and gcc if needed
