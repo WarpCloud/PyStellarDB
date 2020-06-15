@@ -27,6 +27,7 @@ PLAIN Mode (No security is configured)
 LDAP Mode
 ------
 .. code-block:: python
+
     from pystellardb import stellar_hive
 
     conn = stellar_hive.StellarConnection(host="localhost", port=10000, username='hive', password='123456', auth='LDAP', graph_name='pokemon')
@@ -41,6 +42,7 @@ LDAP Mode
 Kerberos Mode
 ------
 .. code-block:: python
+
     from pystellardb import stellar_hive
 
     conn = stellar_hive.StellarConnection(host="localhost", port=10000, kerberos_service_name='hive', auth='KERBEROS', graph_name='pokemon')
@@ -55,6 +57,7 @@ Kerberos Mode
 Execute Hive Query
 ------
 .. code-block:: python
+
     from pystellardb import stellar_hive
 
     # If `graph_name` parameter is None, it will execute a Hive query and return data just as PyHive does
