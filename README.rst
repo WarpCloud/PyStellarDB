@@ -1,5 +1,5 @@
 PyStellarDB
-======
+===========
 
 PyStellarDB is a Python API for executing Transwarp Exetended OpenCypher(TEoC) and Hive query.
 It is base on PyHive(https://github.com/dropbox/PyHive)
@@ -8,7 +8,7 @@ Usage
 =====
 
 PLAIN Mode (No security is configured)
-------
+---------------------------------------
 .. code-block:: python
 
     from pystellardb import stellar_hive
@@ -23,7 +23,7 @@ PLAIN Mode (No security is configured)
 
 
 LDAP Mode
-------
+---------
 .. code-block:: python
 
     from pystellardb import stellar_hive
@@ -38,7 +38,7 @@ LDAP Mode
 
 
 Kerberos Mode
-------
+-------------
 .. code-block:: python
 
     from pystellardb import stellar_hive
@@ -53,7 +53,7 @@ Kerberos Mode
 
 
 Execute Hive Query
-------
+------------------
 .. code-block:: python
 
     from pystellardb import stellar_hive
