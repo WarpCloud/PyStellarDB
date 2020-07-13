@@ -104,7 +104,7 @@ class Vertex(GraphElement):
     @staticmethod
     def parseLabelIdxFromRK(rk):
         """Parse label index from vertex row key in byte array"""
-        return int(str(rk[-1]) + str(rk[-2]), 16)
+        return int(chr(rk[-1]).encode('hex') + chr(rk[-2]).encode('hex'), 16)
 
 
 class Edge(GraphElement):
