@@ -7,6 +7,7 @@ import abc
 from future.utils import with_metaclass
 import json
 import logging
+import binascii
 
 _logger = logging.getLogger(__name__)
 
@@ -104,7 +105,10 @@ class Vertex(GraphElement):
     @staticmethod
     def parseLabelIdxFromRK(rk):
         """Parse label index from vertex row key in byte array"""
-        return int(chr(rk[-1]).encode('hex') + chr(rk[-2]).encode('hex'), 16)
+        label_in_little_endian = rk[-2:]
+        #reverse to big endian
+        label_in_little_endian.reverse()
+        return int(binascii.hexlify(bytearray(label_in_little_endian)), 16)
 
 
 class Edge(GraphElement):
