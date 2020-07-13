@@ -41,6 +41,12 @@ Kerberos Mode
 -------------
 .. code-block:: python
 
+    # Make sure you have the correct realms infomation about the KDC server in /etc/krb5.conf
+    # Make sure you have the correct keytab file in your environment
+    # Run kinit command:
+    # In Linux: kinit -kt FILE_PATH_OF_KEYTABL PRINCIPAL_NAME
+    # In Mac: kinit -t FILE_PATH_OF_KEYTABL -f PRINCIPAL_NAME
+
     from pystellardb import stellar_hive
 
     conn = stellar_hive.StellarConnection(host="localhost", port=10000, kerberos_service_name='hive', auth='KERBEROS', graph_name='pokemon')
