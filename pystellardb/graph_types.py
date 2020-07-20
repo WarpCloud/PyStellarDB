@@ -55,9 +55,9 @@ class Vertex(GraphElement):
 
     def toJSON(self):
         m = {
-            'type': 'vertex',
-            'label': self._label,
-            'uid': self._uid,
+            '__type__': 'vertex',
+            '__label__': self._label,
+            '__uid__': self._uid,
         }
 
         if self._tags is not None and len(self._tags) > 0:
@@ -100,13 +100,13 @@ class Vertex(GraphElement):
     @staticmethod
     def parseUidFromRK(rk):
         """Parse user-defined id from vertex row key in byte array"""
-        return ''.join([chr(x) for x in rk[:-2]])
+        return bytearray([x & 0xff for x in rk[:-2]]).decode('utf-8')
 
     @staticmethod
     def parseLabelIdxFromRK(rk):
         """Parse label index from vertex row key in byte array"""
         label_in_little_endian = rk[-2:]
-        #reverse to big endian
+        """reverse to big endian"""
         label_in_little_endian.reverse()
         return int(binascii.hexlify(bytearray(label_in_little_endian)), 16)
 
@@ -143,11 +143,11 @@ class Edge(GraphElement):
 
     def toJSON(self):
         m = {
-            'type': 'edge',
-            'label': self._label,
-            'euid': self._uid,
-            'startNode': self._startNode.toJSON(),
-            'endNode': self._endNode.toJSON(),
+            '__type__': 'edge',
+            '__label__': self._label,
+            '__euid__': self._uid,
+            '__startNode__': self._startNode.toJSON(),
+            '__endNode__': self._endNode.toJSON(),
         }
 
         if self._tags is not None and len(self._tags) > 0:
