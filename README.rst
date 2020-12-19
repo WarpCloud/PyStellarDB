@@ -84,7 +84,7 @@ Execute Hive Query
 
 
 Execute Graph Query and change to a PySpark RDD object
-----------------------
+------------------------------------------------------
 .. code-block:: python
 
     from pyspark import SparkContext
@@ -109,7 +109,7 @@ Execute Graph Query and change to a PySpark RDD object
 
 
 Execute Hive Query and change to a PySpark RDD object
-----------------------
+-----------------------------------------------------
 .. code-block:: python
 
     from pyspark import SparkContext
