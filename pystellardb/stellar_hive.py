@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 
 from pyhive import hive
 from pystellardb import graph_types
+from pystellardb import stellar_rdd
 
 from TCLIService import TCLIService
 from TCLIService import ttypes
@@ -338,3 +339,11 @@ class StellarCursor(hive.Cursor):
             result[key] = self._convertData(newTypes[1], parsed_data[entry])
 
         return result
+
+    def toRDD(self, sc, parallelism=1):
+        """
+        Transform to RDD
+        param sc: SparkContext
+        param parallelism: RDD parallelism
+        """
+        return stellar_rdd.transformToRDD(self, sc, parallelism)

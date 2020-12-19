@@ -47,7 +47,8 @@ setup(
         'pyhive',
         'sasl',
         'thrift',
-        'thrift-sasl'
+        'thrift-sasl',
+        'pyspark'
     ],
     extras_require={
         'presto': ['requests>=1.0.0'],

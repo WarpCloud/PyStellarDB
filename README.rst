@@ -2,7 +2,20 @@ PyStellarDB
 ===========
 
 PyStellarDB is a Python API for executing Transwarp Exetended OpenCypher(TEoC) and Hive query.
-It is base on PyHive(https://github.com/dropbox/PyHive)
+It could also generate a RDD object which could be used in PySpark.
+It is base on PyHive(https://github.com/dropbox/PyHive) and PySpark(https://github.com/apache/spark/)
+
+PySpark RDD
+===========
+
+We hack a way to generate RDD object using the same method in `sc.parallelize(data)`.
+It could cause memory panic if the query returns a large amount of data.
+
+Users could use a workaround if you do need huge data:
+1. If you are querying a graph, refer to StellarDB manual of Chapter 4.4.5 to save the query data into a temporary table.
+2. If you are querying a SQL table, save your query result into a temporary table.
+3. Find the HDFS path of the temporary table generated in Step 1 or Step 2.
+4. Use API like `sc.newAPIHadoopFile()` to generate RDD.
 
 Usage
 =====
@@ -69,6 +82,52 @@ Execute Hive Query
     cur = conn.cursor()
     cur.execute('SELECT * FROM default.abc limit 10')
 
+
+Execute Graph Query and change to a PySpark RDD object
+----------------------
+.. code-block:: python
+
+    from pyspark import SparkContext
+    from pystellardb import stellar_hive
+    
+    sc = SparkContext("local", "Demo App")
+
+    conn = stellar_hive.StellarConnection(host="localhost", port=10000, graph_name='pokemon')
+    cur = conn.cursor()
+    cur.execute('config query.lang cypher')
+    cur.execute('use graph pokemon')
+    cur.execute('match p = (a)-[f]->(b) return a,f,b limit 10')
+
+    rdd = cur.toRDD(sc)
+
+    def f(x): print(x)
+
+    rdd.map(lambda x: (x[0].toJSON(), x[1].toJSON(), x[2].toJSON())).foreach(f)
+
+    # Every line of this query is in format of Tuple(VertexObject, EdgeObject, VertexObject)
+    # Vertex and Edge object has a function of toJSON() which can print the object in JSON format
+
+
+Execute Hive Query and change to a PySpark RDD object
+----------------------
+.. code-block:: python
+
+    from pyspark import SparkContext
+    from pystellardb import stellar_hive
+    
+    sc = SparkContext("local", "Demo App")
+
+    conn = stellar_hive.StellarConnection(host="localhost", port=10000)
+    cur = conn.cursor()
+    cur.execute('select * from default_db.default_table limit 10')
+
+    rdd = cur.toRDD(sc)
+
+    def f(x): print(x)
+
+    rdd.foreach(f)
+
+    # Every line of this query is in format of Tuple(Column, Column, Column)
 
 Dependencies
 ============
