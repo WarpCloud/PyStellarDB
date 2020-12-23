@@ -12,6 +12,7 @@ We hack a way to generate RDD object using the same method in `sc.parallelize(da
 It could cause memory panic if the query returns a large amount of data.
 
 Users could use a workaround if you do need huge data:
+
 1. If you are querying a graph, refer to StellarDB manual of Chapter 4.4.5 to save the query data into a temporary table.
 
 2. If you are querying a SQL table, save your query result into a temporary table.
