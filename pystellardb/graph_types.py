@@ -252,13 +252,15 @@ class Path(object):
 class GraphSchema(object):
     """
     A schema of graph contains a list of meta info:
+    schema_version: Version of schema
     graph_name: Name of graph, unique in a cluster
     shard_number: Shard number of graph
     index_type: Type of index, could only be 'native' now
     replication_number: Replication number of graph, could be 1, 3, or other odd integer
     """
-    def __init__(self, graph_name, shard_number, index_type,
+    def __init__(self, schema_version, graph_name, shard_number, index_type,
                  replication_number):
+        self._schema_version = schema_version
         self._graph_name = graph_name
         self._shard_number = shard_number
         self._index_type = index_type
@@ -266,11 +268,21 @@ class GraphSchema(object):
         self._vertex_schemas = []
         self._edge_schemas = []
 
+        # since V8
+        self._encryption_type = None
+        self._index_separated = None
+
     def setVertexSchemas(self, schema):
         self._vertex_schemas = schema
 
     def setEdgeSchemas(self, schema):
         self._edge_schemas = schema
+
+    def setEncryptionType(self, enc_type):
+        self._encryption_type = enc_type
+
+    def setIndexSeparate(self, idx_sep):
+        self._index_separated = idx_sep
 
     def getVertexLabel(self, labelIndex):
         for schema in self._vertex_schemas:
@@ -286,10 +298,37 @@ class GraphSchema(object):
 
         return None
 
+    def toJSON(self):
+        m = {
+            '__VERSION': self._schema_version,
+            'graph.name': self._graph_name,
+            'graph.replication.number': self._replication_number,
+            'graph.shard.number': self._shard_number,
+            'graph.index.type': self._index_type,
+            'vertex.tables': self._vertex_schemas,
+            'edge.tables': self._edge_schemas,
+        }
+
+        # since V8
+        if self._encryption_type:
+            m['graph.encryption.type'] = self._encryption_type
+
+        # since V8
+        if self._index_separated:
+            m['graph.index.separated'] = self._index_separated
+
+        return m
+
+    def __str__(self):
+        return json.dumps(self.toJSON())
+
     @staticmethod
     def parseSchemaFromJson(json_str):
         """Parse a schema from JSON string"""
         m = json.loads(json_str)
+
+        if '__VERSION' not in m:
+            raise ValueError('Could not find `__VERSION` in graph schema')
 
         if 'graph.index.type' not in m:
             raise ValueError(
@@ -312,11 +351,19 @@ class GraphSchema(object):
         if 'edge.tables' not in m:
             raise ValueError('Could not find `edge.tables` in graph schema')
 
-        result = GraphSchema(m['graph.name'], int(m['graph.shard.number']),
+        result = GraphSchema(m['__VERSION'], m['graph.name'], int(m['graph.shard.number']),
                              m['graph.index.type'],
                              int(m['graph.replication.number']))
 
         result.setVertexSchemas(m['vertex.tables'])
         result.setEdgeSchemas(m['edge.tables'])
+
+        # since V8
+        if 'graph.encryption.type' in m:
+            result.setEncryptionType(m['graph.encryption.type'])
+
+        # since V8
+        if 'graph.index.separated' in m:
+            result.setIndexSeparate(m['graph.index.separated'])
 
         return result

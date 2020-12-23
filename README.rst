@@ -13,8 +13,11 @@ It could cause memory panic if the query returns a large amount of data.
 
 Users could use a workaround if you do need huge data:
 1. If you are querying a graph, refer to StellarDB manual of Chapter 4.4.5 to save the query data into a temporary table.
+
 2. If you are querying a SQL table, save your query result into a temporary table.
+
 3. Find the HDFS path of the temporary table generated in Step 1 or Step 2.
+
 4. Use API like `sc.newAPIHadoopFile()` to generate RDD.
 
 Usage
