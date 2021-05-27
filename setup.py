@@ -33,7 +33,7 @@ setup(
     author="Zhiping Wang",
     author_email="zhiping.wang@transwarp.io",
     license="Apache License, Version 2.0",
-    python_requires='>=2.7',
+    python_requires='>=2.7,<=3.7',
     packages=find_packages(),
     classifiers=[
         "Intended Audience :: Developers",
@@ -48,7 +48,7 @@ setup(
         'sasl',
         'thrift',
         'thrift-sasl',
-        'pyspark'
+        'pyspark>=2.4.0'
     ],
     extras_require={
         'presto': ['requests>=1.0.0'],

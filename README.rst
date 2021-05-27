@@ -139,7 +139,7 @@ Dependencies
 Required:
 ------------
 
-- Python 2.7+ / Python 3
+- Python 2.7+ / Less than Python 3.7
 
 System SASL
 ------------
@@ -162,6 +162,28 @@ RHEL/CentOS:
     yum install cyrus-sasl-md5 cyrus-sasl-plain cyrus-sasl-gssapi cyrus-sasl-devel
     yum install gcc-c++ python-devel.x86_64     #Update python and gcc if needed
 
+    # If your Python environment is 3.X, then you may need to compile and reinstall Python 
+    # if pip3 install fails with a message like 'Can't connect to HTTPS URL because the SSL module is not available'
+    
+    # 1. Download a higher version of openssl, e.g: https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+    # 2. Install openssl: ./config && make && make install
+    # 3. Link openssl: echo /usr/local/lib64/ > /etc/ld.so.conf.d/openssl-1.1.1.conf
+    # 4. Update dynamic lib: ldconfig -v
+    # 5. Download a Python source package
+    # 6. vim Modules/Setup, search '_socket socketmodule.c', uncomment
+    #    _socket socketmodule.c
+    #    SSL=/usr/local/ssl
+    #    _ssl _ssl.c \
+    #            -DUSE_SSL -I$(SSL)/include -I$(SSL)/include/openssl \
+    #            -L$(SSL)/lib -lssl -lcrypto
+    #
+    # 7. Install Python: ./configure && make && make install
+
+Notices
+=======
+
+If you install pystellardb >= 0.9, then it will install a beeline command into system.
+Delete /usr/local/bin/beeline if you don't need it. 
 
 Requirements
 ============
