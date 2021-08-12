@@ -217,47 +217,47 @@ Windows Kerberos Configuration:
     e.g.(krb5.conf on KDC):
 
 
-[logging]
-default = FILE:/var/log/krb5libs.log
-kdc = FILE:/var/log/krb5kdc.log
-admin_server = FILE:/var/log/kadmind.log
+    [logging]
+    default = FILE:/var/log/krb5libs.log
+    kdc = FILE:/var/log/krb5kdc.log
+    admin_server = FILE:/var/log/kadmind.log
 
-[libdefaults]
-default_realm = DEFAULT
-dns_lookup_realm = false
-dns_lookup_kdc = false
-ticket_lifetime = 24h
-renew_lifetime = 7d
-forwardable = true
-allow_weak_crypto = true
-udp_preference_limit = 32700
-default_ccache_name = FILE:/tmp/krb5cc_%{uid}
+    [libdefaults]
+    default_realm = DEFAULT
+    dns_lookup_realm = false
+    dns_lookup_kdc = false
+    ticket_lifetime = 24h
+    renew_lifetime = 7d
+    forwardable = true
+    allow_weak_crypto = true
+    udp_preference_limit = 32700
+    default_ccache_name = FILE:/tmp/krb5cc_%{uid}
 
-[realms]
-DEFAULT = {
-kdc = host1:1088
-kdc = host2:1088
-}
+    [realms]
+    DEFAULT = {
+    kdc = host1:1088
+    kdc = host2:1088
+    }
 
 
     Modify it, delete [logging] and default_ccache_name in [libdefaults]:
 
 
-[libdefaults]
-default_realm = DEFAULT
-dns_lookup_realm = false
-dns_lookup_kdc = false
-ticket_lifetime = 24h
-renew_lifetime = 7d
-forwardable = true
-allow_weak_crypto = true
-udp_preference_limit = 32700
+    [libdefaults]
+    default_realm = DEFAULT
+    dns_lookup_realm = false
+    dns_lookup_kdc = false
+    ticket_lifetime = 24h
+    renew_lifetime = 7d
+    forwardable = true
+    allow_weak_crypto = true
+    udp_preference_limit = 32700
 
-[realms]
-DEFAULT = {
-kdc = host1:1088
-kdc = host2:1088
-}
+    [realms]
+    DEFAULT = {
+    kdc = host1:1088
+    kdc = host2:1088
+    }
 
     This is your krb5.ini for Windows Kerberos. Put it at those 3 places:
     C:\ProgramData\MIT\Kerberos5\krb5.ini
