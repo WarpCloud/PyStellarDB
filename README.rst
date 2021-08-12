@@ -216,7 +216,7 @@ Windows Kerberos Configuration:
     Find /etc/krb5.conf on your KDC, copy it into krb5.ini on Windows with some modifications.
     e.g.(krb5.conf on KDC):
 
-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 [logging]
 default = FILE:/var/log/krb5libs.log
 kdc = FILE:/var/log/krb5kdc.log
@@ -238,11 +238,11 @@ DEFAULT = {
 kdc = host1:1088
 kdc = host2:1088
 }
-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 
     Modify it, delete [logging] and default_ccache_name in [libdefaults]:
 
-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 [libdefaults]
 default_realm = DEFAULT
 dns_lookup_realm = false
@@ -258,7 +258,7 @@ DEFAULT = {
 kdc = host1:1088
 kdc = host2:1088
 }
-=-=-=-=-=-=-=-=-=-=-=-=-=
+
     This is your krb5.ini for Windows Kerberos. Put it at those 3 places:
     C:\ProgramData\MIT\Kerberos5\krb5.ini
     C:\Program Files\MIT\Kerberos\krb5.ini
