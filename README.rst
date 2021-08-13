@@ -210,114 +210,77 @@ Windows Kerberos Configuration
 ============
 
 If you're connecting to databases using Kerberos authentication from Windows platform,
-
 you'll need to install & configure Kerberos for Windows first.
-
 Get it from http://web.mit.edu/kerberos/dist/
 
 After installation, configure the environment variables.
-
 Make sure your Kerberos variable is set ahead of JDK variable(If you have JDK), because JDK also has kinit etc.
 
-
 Find /etc/krb5.conf on your KDC, copy it into krb5.ini on Windows with some modifications.
-
 e.g.(krb5.conf on KDC):
 
+.. code-block:: bash
 
-[logging]
+    [logging]
+    default = FILE:/var/log/krb5libs.log
+    kdc = FILE:/var/log/krb5kdc.log
+    admin_server = FILE:/var/log/kadmind.log
 
-default = FILE:/var/log/krb5libs.log
+    [libdefaults]
+    default_realm = DEFAULT
+    dns_lookup_realm = false
+    dns_lookup_kdc = false
+    ticket_lifetime = 24h
+    renew_lifetime = 7d
+    forwardable = true
+    allow_weak_crypto = true
+    udp_preference_limit = 32700
+    default_ccache_name = FILE:/tmp/krb5cc_%{uid}
 
-kdc = FILE:/var/log/krb5kdc.log
-
-admin_server = FILE:/var/log/kadmind.log
-
-
-[libdefaults]
-
-default_realm = DEFAULT
-
-dns_lookup_realm = false
-
-dns_lookup_kdc = false
-
-ticket_lifetime = 24h
-
-renew_lifetime = 7d
-
-forwardable = true
-
-allow_weak_crypto = true
-
-udp_preference_limit = 32700
-
-default_ccache_name = FILE:/tmp/krb5cc_%{uid}
-
-
-[realms]
-
-DEFAULT = {
-
-kdc = host1:1088
-
-kdc = host2:1088
-
-}
-
+    [realms]
+    DEFAULT = {
+    kdc = host1:1088
+    kdc = host2:1088
+    }
 
 Modify it, delete [logging] and default_ccache_name in [libdefaults]:
 
+.. code-block:: bash
 
-[libdefaults]
+    [libdefaults]
+    default_realm = DEFAULT
+    dns_lookup_realm = false
+    dns_lookup_kdc = false
+    ticket_lifetime = 24h
+    renew_lifetime = 7d
+    forwardable = true
+    allow_weak_crypto = true
+    udp_preference_limit = 32700
 
-default_realm = DEFAULT
-
-dns_lookup_realm = false
-
-dns_lookup_kdc = false
-
-ticket_lifetime = 24h
-
-renew_lifetime = 7d
-
-forwardable = true
-
-allow_weak_crypto = true
-
-udp_preference_limit = 32700
-
-
-[realms]
-
-DEFAULT = {
-
-kdc = host1:1088
-
-kdc = host2:1088
-
-}
+    [realms]
+    DEFAULT = {
+    kdc = host1:1088
+    kdc = host2:1088
+    }
 
 This is your krb5.ini for Windows Kerberos. Put it at those 3 places:
 
-C:\ProgramData\MIT\Kerberos5\krb5.ini
+    C:\ProgramData\MIT\Kerberos5\krb5.ini
 
-C:\Program Files\MIT\Kerberos\krb5.ini
+    C:\Program Files\MIT\Kerberos\krb5.ini
 
-C:\Windows\krb5.ini
+    C:\Windows\krb5.ini
 
 
-Finally, configure hosts at: C:\Windows\System32\drivers\etc\hosts
+Finally, configure hosts at: C:/Windows/System32/drivers/etc/hosts
+Add ip mappings of host1, host2 in the previous example. e.g.
 
-Add ip mappings of host1, host2 in the previous example.
+.. code-block:: bash
 
-e.g.
+    10.6.6.96     host1
+    10.6.6.97     host2
 
-10.6.6.96     host1
-
-10.6.6.97     host2
-
-After all, you can run kinit in the command line now!
+Now, you can run kinit in the command line!
 
 Testing
 =======
