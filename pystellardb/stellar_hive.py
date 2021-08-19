@@ -175,6 +175,7 @@ class StellarConnection(object):
                 assert response.serverProtocolVersion == protocol_version, \
                     "Unable to handle protocol version {}".format(response.serverProtocolVersion)
                 with contextlib.closing(self.cursor()) as cursor:
+                    cursor.execute('set query.lang=sql')
                     cursor.execute('USE `{}`'.format(database))
         except:
             self._transport.close()
