@@ -100,7 +100,7 @@ class Vertex(GraphElement):
     @staticmethod
     def parseUidFromRK(rk):
         """Parse user-defined id from vertex row key in byte array"""
-        return ''.join([chr(x) for x in rk[:-2]])
+        return bytearray([x & 0xFF for x in rk[:-2]]).decode('utf-8')
 
     @staticmethod
     def parseLabelIdxFromRK(rk):
