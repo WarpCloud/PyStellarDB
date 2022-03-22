@@ -207,7 +207,7 @@ PyHive works with
 
 
 Windows Kerberos Configuration
-============
+==============================
 
 If you're connecting to databases using Kerberos authentication from Windows platform,
 you'll need to install & configure Kerberos for Windows first.
