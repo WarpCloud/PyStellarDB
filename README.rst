@@ -139,14 +139,10 @@ Dependencies
 Required:
 ------------
 
-- Python 2.7+ / Less than Python 3.7
+- Python 2.7+ / Python 3
 
 System SASL
 ------------
-
-Different systems require different packages to be installed to enable SASL support.
-Some examples of how to install the packages on different distributions
-follow.
 
 Ubuntu:
 
@@ -162,14 +158,14 @@ RHEL/CentOS:
     yum install cyrus-sasl-md5 cyrus-sasl-plain cyrus-sasl-gssapi cyrus-sasl-devel
     yum install gcc-c++ python-devel.x86_64     #Update python and gcc if needed
 
-    # If your Python environment is 3.X, then you may need to compile and reinstall Python 
     # if pip3 install fails with a message like 'Can't connect to HTTPS URL because the SSL module is not available'
-    
+    # you may need to update ssl & reinstall python
+
     # 1. Download a higher version of openssl, e.g: https://www.openssl.org/source/openssl-1.1.1k.tar.gz
     # 2. Install openssl: ./config && make && make install
     # 3. Link openssl: echo /usr/local/lib64/ > /etc/ld.so.conf.d/openssl-1.1.1.conf
     # 4. Update dynamic lib: ldconfig -v
-    # 5. Download a Python source package
+    # 5. Uninstall Python & Download a new Python source package
     # 6. vim Modules/Setup, search '_socket socketmodule.c', uncomment
     #    _socket socketmodule.c
     #    SSL=/usr/local/ssl
@@ -186,13 +182,12 @@ Windows:
     # There are 3 ways of installing sasl for python on windows
     # 1. (recommended) Download a .whl version of sasl from https://www.lfd.uci.edu/~gohlke/pythonlibs/#sasl
     # 2. (recommended) If using anaconda, use conda install sasl.
-    # 3. Install Microsoft Visual C++ 9.0/14.0 buildtools for python2.7/3.x, then pip install sasl(under test).
+    # 3. Install Microsoft Visual C++ 9.0/14.0 buildtools for python2.7/3.x, then pip install sasl.
 
 Notices
 =======
 
-If you install pystellardb >= 0.9, then it will install a beeline command into system.
-Delete /usr/local/bin/beeline if you don't need it. 
+Pystellardb >= 0.9 contains beeline installation to /usr/local/bin/beeline.
 
 Requirements
 ============
@@ -209,12 +204,12 @@ PyHive works with
 Windows Kerberos Configuration
 ==============================
 
-If you're connecting to databases using Kerberos authentication from Windows platform,
-you'll need to install & configure Kerberos for Windows first.
+Windows Kerberos configuration can be a little bit tricky and may need a few instructions.
+First, you'll need to install & configure Kerberos for Windows.
 Get it from http://web.mit.edu/kerberos/dist/
 
 After installation, configure the environment variables.
-Make sure your Kerberos variable is set ahead of JDK variable(If you have JDK), because JDK also has kinit etc.
+Make sure the position of your Kerberos variable is ahead of JDK variable, avoid using kinit command located in JDK path.
 
 Find /etc/krb5.conf on your KDC, copy it into krb5.ini on Windows with some modifications.
 e.g.(krb5.conf on KDC):
@@ -263,7 +258,7 @@ Modify it, delete [logging] and default_ccache_name in [libdefaults]:
     kdc = host2:1088
     }
 
-This is your krb5.ini for Windows Kerberos. Put it at those 3 places:
+Above is your krb5.ini for Kerberos on Windows. Put it at 3 places:
 
     C:\ProgramData\MIT\Kerberos5\krb5.ini
 
@@ -272,7 +267,7 @@ This is your krb5.ini for Windows Kerberos. Put it at those 3 places:
     C:\Windows\krb5.ini
 
 
-Finally, configure hosts at: C:/Windows/System32/drivers/etc/hosts
+Finally, configure hosts file at: C:/Windows/System32/drivers/etc/hosts
 Add ip mappings of host1, host2 in the previous example. e.g.
 
 .. code-block:: bash
@@ -280,7 +275,7 @@ Add ip mappings of host1, host2 in the previous example. e.g.
     10.6.6.96     host1
     10.6.6.97     host2
 
-Now, you can run kinit in the command line!
+Now, you can try running kinit in your command line!
 
 Testing
 =======
