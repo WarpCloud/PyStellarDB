@@ -84,16 +84,19 @@ class Vertex(GraphElement):
         if 'labels' not in m:
             raise ValueError("Could not find label in JSON")
 
-        if '__uid' not in m['properties']:
+        prop_dict = m['properties']
+
+        if '__uid' not in prop_dict:
             raise ValueError("Could not find uid in JSON")
 
-        vertex = Vertex(m['properties']['__uid'], m['labels'][0])
+        vertex = Vertex(prop_dict['__uid'], m['labels'][0])
 
-        for key in m['properties'].keys():
+        for key in prop_dict.keys():
             if key != '__uid' and key != '__tags':
-                vertex.setFeild(key, m['properties'][key])
+                vertex.setFeild(key, prop_dict[key])
 
-        vertex.setTags(m['properties']['__tags'])
+        if '__tags' in prop_dict:
+            vertex.setTags(prop_dict['__tags'])
 
         return vertex
 
@@ -109,6 +112,31 @@ class Vertex(GraphElement):
         #reverse to big endian
         label_in_little_endian.reverse()
         return int(binascii.hexlify(bytearray(label_in_little_endian)), 16)
+
+    @staticmethod
+    def parseShardIdFromRKV18(rk):
+        """Parse shard id from vertex row key in byte array for graphSchema V18"""
+        shard_id = (rk[0] & 0xFF) << 8
+        shard_id |= rk[1] & 0xF0
+        return int(shard_id >> 4)
+
+    @staticmethod
+    def parseLabelIdxFromRKV18(rk):
+        """Parse label index from vertex row key in byte array for graphSchema V18"""
+        label_index = (rk[1] & 0x0F) << 8
+        label_index |= rk[2] & 0xFF
+        return int(label_index)
+
+    @staticmethod
+    def parseInnerIdFromRKV18(rk, offset):
+        """Parse long type inner id from vertex row key in byte array for graphSchema V18"""
+        ID_LEN = 8
+        inner_id = rk[offset + ID_LEN - 1] & 0x00FF
+        inner_id |= (rk[offset + ID_LEN - 2] & 0x00FF) << 8
+        inner_id |= (rk[offset + ID_LEN - 3] & 0x00FF) << 16
+        inner_id |= (rk[offset + ID_LEN - 4] & 0x00FF) << 24
+        inner_id |= (rk[offset + ID_LEN - 5] & 0x00FF) << 32
+        return int(inner_id)
 
 
 class Edge(GraphElement):
@@ -176,12 +204,18 @@ class Edge(GraphElement):
 
         edge = Edge(m['labels'][0])
 
+        prop_dict = m['properties']
+
         # parse start node
         if 'startKey' not in m:
             raise ValueError("Could not find start node entity key in JSON")
 
-        startUid = Vertex.parseUidFromRK(m['startKey'])
-        startLabelIdx = Vertex.parseLabelIdxFromRK(m['startKey'])
+        if schema.getVersion() == 18:
+            startUid = prop_dict['__srcuid']
+            startLabelIdx = Vertex.parseLabelIdxFromRKV18(m['startKey'])
+        else:
+            startUid = Vertex.parseUidFromRK(m['startKey'])
+            startLabelIdx = Vertex.parseLabelIdxFromRK(m['startKey'])
         startLabel = schema.getVertexLabel(startLabelIdx)
 
         if startLabel is None:
@@ -195,8 +229,12 @@ class Edge(GraphElement):
         if 'endKey' not in m:
             raise ValueError("Could not find end node entity key in JSON")
 
-        endUid = Vertex.parseUidFromRK(m['endKey'])
-        endLabelIdx = Vertex.parseLabelIdxFromRK(m['endKey'])
+        if schema.getVersion() == 18:
+            endUid = prop_dict['__dstuid']
+            endLabelIdx = Vertex.parseLabelIdxFromRKV18(m['endKey'])
+        else:
+            endUid = Vertex.parseUidFromRK(m['endKey'])
+            endLabelIdx = Vertex.parseLabelIdxFromRK(m['endKey'])
         endLabel = schema.getVertexLabel(endLabelIdx)
 
         if endLabel is None:
@@ -207,16 +245,17 @@ class Edge(GraphElement):
         edge.setEndNode(Vertex(endUid, endLabel))
 
         # parse extra edge id
-        if '__uid' in m['properties']:
-            edge.setUid(m['properties']['__uid'])
+        if '__uid' in prop_dict:
+            edge.setUid(prop_dict['__uid'])
 
         # parse properties
-        for key in m['properties'].keys():
+        for key in prop_dict.keys():
             if key != '__uid' and key != '__tags':
                 edge.setFeild(key, m['properties'][key])
 
         # parse tags
-        edge.setTags(m['properties']['__tags'])
+        if '__tags' in prop_dict:
+            edge.setTags(prop_dict['__tags'])
 
         return edge
 
@@ -297,6 +336,9 @@ class GraphSchema(object):
                 return schema['label.value']
 
         return None
+
+    def getVersion(self):
+        return self._schema_version
 
     def toJSON(self):
         m = {
