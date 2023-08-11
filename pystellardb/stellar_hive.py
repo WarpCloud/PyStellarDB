@@ -324,9 +324,9 @@ class StellarCursor(hive.Cursor):
     def _parseList(self, type, data):
         """Parse 'CruxType:List' type"""
         parsed_data = json.loads(data)
-        newType = type[len('CruxType:List') + 1:-2]
+        newType = type[len('CruxType:List') + 1:type.find('>')]
 
-        return [self._convertData(newType, entry) for entry in parsed_data]
+        return [self._convertData(newType, json.dumps(entry)) for entry in parsed_data]
 
     def _parseMap(self, type, data):
         """Parse 'CruxType:Map' type"""
