@@ -33,7 +33,7 @@ setup(
     author="Zhiping Wang",
     author_email="zhiping.wang@transwarp.io",
     license="Apache License, Version 2.0",
-    python_requires='>=2.7,<=3.7',
+    python_requires='>=2.7',
     packages=find_packages(),
     classifiers=[
         "Intended Audience :: Developers",
