@@ -6,8 +6,13 @@ from __future__ import absolute_import
 import abc
 from future.utils import with_metaclass
 import logging
-from pyspark import RDD, SparkContext
-from pyspark.serializers import BatchedSerializer
+
+try:
+    import pyspark
+    from pyspark import RDD, SparkContext
+    from pyspark.serializers import BatchedSerializer
+except ImportError:
+    pyspark = None
 
 _logger = logging.getLogger(__name__)
 
@@ -20,6 +25,9 @@ def transformToRDD(cursor, sc, parallelism=1):
     param sc: SparkContext
     param parallelism: Parallelism of RDD
     """
+    if not pyspark:
+        raise ImportError("Could not import pyspark! Please run `pip install pyspark` first in your environment!")
+
     # Get all data from cursor
     data = cursor.fetchall()
 
