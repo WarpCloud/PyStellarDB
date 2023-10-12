@@ -305,7 +305,7 @@ class StellarCursor(hive.Cursor):
         elif type == 'int':
             return int(data)
         elif type == 'long':
-            return long(data)
+            return int(data)
         elif type == 'float' or type == 'double':
             return float(data)
         elif type == 'CruxType:Node' or type == 'GraphNode':

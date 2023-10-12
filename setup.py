@@ -47,14 +47,14 @@ setup(
         'pyhive',
         'sasl',
         'thrift',
-        'thrift-sasl>=0.3.0',
-        'pyspark>=2.4.0'
+        'thrift-sasl>=0.3.0'
     ],
     extras_require={
         'presto': ['requests>=1.0.0'],
         'hive': ['sasl>=0.2.1', 'thrift>=0.10.0'],
         'sqlalchemy': ['sqlalchemy>=1.3.0'],
         'kerberos': ['requests_kerberos>=0.12.0'],
+        'pyspark': ['pyspark>=2.4.0']
     },
     tests_require=[
         'mock>=1.0.0',
