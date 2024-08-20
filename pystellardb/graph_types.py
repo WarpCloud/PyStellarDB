@@ -69,7 +69,7 @@ class Vertex(GraphElement):
         return m
 
     def __str__(self):
-        return json.dumps(self.toJSON())
+        return json.dumps(self.toJSON(), ensure_ascii=False)
 
     @staticmethod
     def parseVertexFromJson(json_str):
@@ -187,7 +187,7 @@ class Edge(GraphElement):
         return m
 
     def __str__(self):
-        return json.dumps(self.toJSON())
+        return json.dumps(self.toJSON(), ensure_ascii=False)
 
     @staticmethod
     def parseEdgeFromJson(schema, json_str):
@@ -362,7 +362,7 @@ class GraphSchema(object):
         return m
 
     def __str__(self):
-        return json.dumps(self.toJSON())
+        return json.dumps(self.toJSON(), ensure_ascii=False)
 
     @staticmethod
     def parseSchemaFromJson(json_str):
