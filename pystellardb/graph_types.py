@@ -18,6 +18,7 @@ class GraphElement(with_metaclass(abc.ABCMeta, object)):
         self._label = label
         self._fields = {}
         self._tags = []
+        self._rowKeyHexString = None
 
     def getLabel(self):
         return self._label
@@ -40,6 +41,12 @@ class GraphElement(with_metaclass(abc.ABCMeta, object)):
     def setTags(self, newTags):
         self._tags = newTags
 
+    def setRowKeyHexString(self, rowkey):
+        self._rowKeyHexString = rowkey
+
+    def getRowKeyHexString(self):
+        return self._rowKeyHexString
+
 
 class Vertex(GraphElement):
     """
@@ -58,6 +65,7 @@ class Vertex(GraphElement):
             'type': 'vertex',
             'label': self._label,
             'uid': self._uid,
+            'RowKeyHexString': self._rowKeyHexString,
         }
 
         if self._tags is not None and len(self._tags) > 0:
@@ -97,6 +105,9 @@ class Vertex(GraphElement):
 
         if '__tags' in prop_dict:
             vertex.setTags(prop_dict['__tags'])
+
+        rk = " ".join(map(lambda x: str(x), m['entityKey']))
+        vertex.setRowKeyHexString(rk)
 
         return vertex
 
@@ -176,6 +187,7 @@ class Edge(GraphElement):
             'euid': self._uid,
             'startNode': self._startNode.toJSON(),
             'endNode': self._endNode.toJSON(),
+            'RowKeyHexString': self._rowKeyHexString,
         }
 
         if self._tags is not None and len(self._tags) > 0:
@@ -204,6 +216,9 @@ class Edge(GraphElement):
 
         edge = Edge(m['labels'][0])
 
+        rk = " ".join(map(lambda x: str(x), m['entityKey']))
+        edge.setRowKeyHexString(rk)
+
         prop_dict = m['properties']
 
         # parse start node
@@ -222,8 +237,10 @@ class Edge(GraphElement):
             raise ValueError(
                 'Could not find start node label with label index `{}`'.format(
                     startLabelIdx))
-
-        edge.setStartNode(Vertex(startUid, startLabel))
+        
+        start_node = Vertex(startUid, startLabel)
+        start_node.setRowKeyHexString(" ".join(map(lambda x: str(x), m['entityKey'][:8])))
+        edge.setStartNode(start_node)
 
         # parse end node
         if 'endKey' not in m:
@@ -242,7 +259,9 @@ class Edge(GraphElement):
                 'Could not find end node label with label index `{}`'.format(
                     endLabelIdx))
 
-        edge.setEndNode(Vertex(endUid, endLabel))
+        end_node = Vertex(endUid, endLabel)
+        end_node.setRowKeyHexString(" ".join(map(lambda x: str(x), m['entityKey'][8:16])))
+        edge.setEndNode(end_node)
 
         # parse extra edge id
         if '__uid' in prop_dict:
