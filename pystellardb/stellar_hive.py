@@ -146,6 +146,7 @@ class StellarConnection(object):
         protocol_version = ttypes.TProtocolVersion.HIVE_CLI_SERVICE_PROTOCOL_V6
 
         self._graph_schema = None
+        self._graph_schema_from_data = None
 
         try:
             self._transport.open()
@@ -171,6 +172,11 @@ class StellarConnection(object):
 
                     self._graph_schema = graph_types.GraphSchema.parseSchemaFromJson(
                         schemaInJson)
+                    
+                    # get schema from data
+                    cursor.execute('manipulate graph {} get_schema_from_data'.format(graph_name))
+                    self._graph_schema_from_data = cursor.fetchone()[0]
+                    self._graph_schema_from_data = json.loads(self._graph_schema_from_data)
             else:
                 assert response.serverProtocolVersion == protocol_version, \
                     "Unable to handle protocol version {}".format(response.serverProtocolVersion)
@@ -219,6 +225,25 @@ class StellarConnection(object):
     def getGraphSchema(self):
         return self._graph_schema
 
+    def getSchemaFromData(self) -> dict:
+        """
+        Get schema from graph data.
+        The difference of getGraphSchema() and getSchemaFromData() is the latter one will return start node labels and end node labels of edges.
+        Result format is:
+        {
+            "vertices": [
+                { "label": "label_a", "fields": ["prop1", "prop2", ...] }
+            ],
+            "edges": [
+                "label": "label_b",
+                "fields": ["prop3", "prop4", ...],
+                "src_dst_labels": [
+                    {"src": "label_x", "dst": "label_y"},
+                ]
+            ]
+        }
+        """
+        return self._graph_schema_from_data
 
 class StellarCursor(hive.Cursor):
     """These objects represent a database cursor, which is used to manage the context of a fetch
