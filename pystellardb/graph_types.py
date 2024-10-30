@@ -8,6 +8,7 @@ from future.utils import with_metaclass
 import json
 import logging
 import binascii
+from typing import cast
 
 _logger = logging.getLogger(__name__)
 
@@ -46,6 +47,21 @@ class GraphElement(with_metaclass(abc.ABCMeta, object)):
 
     def getRowKeyHexString(self):
         return self._rowKeyHexString
+    
+    def __hash__(self):
+        if self._rowKeyHexString:
+            return hash(self._rowKeyHexString)
+        else:
+            return hash(self._fields)
+
+    def __eq__(self, value):
+        if isinstance(value, GraphElement):
+            if self._rowKeyHexString:
+                return self._rowKeyHexString == value._rowKeyHexString
+            else:
+                return self._fields == value._fields
+        else:
+            return False
 
 
 class Vertex(GraphElement):
@@ -292,6 +308,22 @@ class Path(object):
 
     def __str__(self):
         return str([str(entry) for entry in self._elems])
+    
+    def __hash__(self):
+        rks = []
+        for elem in self._elems:
+            rks.append(cast(GraphElement, elem).getRowKeyHexString())
+        
+        return hash(tuple(rks))
+
+    def __eq__(self, value):
+        if isinstance(value, Path):
+            if self.length() == value.length():
+                return self.getElements() == value.getElements()
+            else:
+                return False
+        else:
+            return False
 
     @staticmethod
     def parsePathFromJson(schema, json_str):
