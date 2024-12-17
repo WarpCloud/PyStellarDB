@@ -241,7 +241,7 @@ class Edge(GraphElement):
         if 'startKey' not in m:
             raise ValueError("Could not find start node entity key in JSON")
 
-        if schema.getVersion() == 18:
+        if schema.getVersion() >= 18:
             startUid = prop_dict['__srcuid']
             startLabelIdx = Vertex.parseLabelIdxFromRKV18(m['startKey'])
         else:
@@ -262,7 +262,7 @@ class Edge(GraphElement):
         if 'endKey' not in m:
             raise ValueError("Could not find end node entity key in JSON")
 
-        if schema.getVersion() == 18:
+        if schema.getVersion() >= 18:
             endUid = prop_dict['__dstuid']
             endLabelIdx = Vertex.parseLabelIdxFromRKV18(m['endKey'])
         else:
