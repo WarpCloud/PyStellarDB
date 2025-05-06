@@ -9,8 +9,9 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from pyhive import hive
-from pystellardb import graph_types
-from pystellardb import stellar_rdd
+from . import graph_types
+from . import stellar_rdd
+from .sasl_compat import PureSASLClient
 
 from TCLIService import TCLIService
 from TCLIService import ttypes
@@ -102,12 +103,10 @@ class StellarConnection(object):
                 self._transport = thrift.transport.TTransport.TBufferedTransport(
                     socket)
             elif auth in ('LDAP', 'KERBEROS', 'NONE', 'CUSTOM'):
-                # Defer import so package dependency is optional
-                import sasl
                 import thrift_sasl
 
                 if auth == 'KERBEROS':
-                    # KERBEROS mode in hive.server2.authentication is GSSAPI in sasl library
+                    # KERBEROS mode in hive.server2.authentication is GSSAPI in SASL
                     sasl_auth = 'GSSAPI'
                 else:
                     sasl_auth = 'PLAIN'
@@ -116,20 +115,15 @@ class StellarConnection(object):
                         password = 'x'
 
                 def sasl_factory():
-                    sasl_client = sasl.Client()
-                    sasl_client.setAttr('host', host)
                     if sasl_auth == 'GSSAPI':
-                        sasl_client.setAttr('service', kerberos_service_name)
+                        sasl_client = PureSASLClient(host, mechanism="GSSAPI", service=kerberos_service_name)
                     elif sasl_auth == 'PLAIN':
-                        sasl_client.setAttr('username', username)
-                        sasl_client.setAttr('password', password)
+                        sasl_client = PureSASLClient(host, mechanism="PLAIN", username=username, password=password)
                     else:
-                        raise AssertionError
-                    sasl_client.init()
+                        raise AssertionError("Unsupported SASL mechanism")
                     return sasl_client
 
-                self._transport = thrift_sasl.TSaslClientTransport(
-                    sasl_factory, sasl_auth, socket)
+                self._transport = thrift_sasl.TSaslClientTransport(sasl_factory, sasl_auth, socket)
             else:
                 # All HS2 config options:
                 # https://cwiki.apache.org/confluence/display/Hive/Setting+Up+HiveServer2#SettingUpHiveServer2-Configuration
@@ -174,9 +168,12 @@ class StellarConnection(object):
                         schemaInJson)
                     
                     # get schema from data
-                    cursor.execute('manipulate graph {} get_schema_from_data'.format(graph_name))
-                    self._graph_schema_from_data = cursor.fetchone()[0]
-                    self._graph_schema_from_data = json.loads(self._graph_schema_from_data)
+                    try:
+                        cursor.execute('manipulate graph {} get_schema_from_data'.format(graph_name))
+                        self._graph_schema_from_data = cursor.fetchone()[0]
+                        self._graph_schema_from_data = json.loads(self._graph_schema_from_data)
+                    except:
+                        pass
             else:
                 assert response.serverProtocolVersion == protocol_version, \
                     "Unable to handle protocol version {}".format(response.serverProtocolVersion)

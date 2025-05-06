@@ -28,6 +28,7 @@ PLAIN Mode (No security is configured)
 ---------------------------------------
 .. code-block:: python
 
+    """version < 1.0 """
     from pystellardb import stellar_hive
 
     conn = stellar_hive.StellarConnection(host="localhost", port=10000, graph_name='pokemon')
@@ -38,11 +39,18 @@ PLAIN Mode (No security is configured)
 
     print cur.fetchall()
 
+    """version >= 1.0 """
+    from pystellardb import Connection, Graph
+    conn = stellar_hive.StellarConnection(host="localhost", port=10000)
+    graph = Graph('pokemon', conn)
+    query_result = graph.execute('match p = (a)-[f]->(b) return a,f,b limit 1')
+    for row in query_result:
+        print(row[0].toJSON(), row[1].toJSON(), row[2].toJSON())
 
 LDAP Mode
 ---------
 .. code-block:: python
-
+    """version < 1.0 """
     from pystellardb import stellar_hive
 
     conn = stellar_hive.StellarConnection(host="localhost", port=10000, username='hive', password='123456', auth='LDAP', graph_name='pokemon')
@@ -52,6 +60,14 @@ LDAP Mode
     cur.execute('match p = (a)-[f]->(b) return a,f,b limit 1')
 
     print cur.fetchall()
+
+    """version >= 1.0 """
+    from pystellardb import Connection, Graph
+    conn = stellar_hive.StellarConnection(host="localhost", port=10000, username='hive', password='123456', auth='LDAP')
+    graph = Graph('pokemon', conn)
+    query_result = graph.execute('match p = (a)-[f]->(b) return a,f,b limit 1')
+    for row in query_result:
+        print(row[0].toJSON(), row[1].toJSON(), row[2].toJSON())
 
 
 Kerberos Mode
@@ -64,6 +80,12 @@ Kerberos Mode
     # In Linux: kinit -kt FILE_PATH_OF_KEYTABL PRINCIPAL_NAME
     # In Mac: kinit -t FILE_PATH_OF_KEYTABL -f PRINCIPAL_NAME
 
+    # Run with Kerberos path environment variables
+    # ENV KRB5_CONFIG=/etc/krb5.conf
+    # ENV KRB5_CLIENT_KTNAME=/etc/krb5.keytab
+    # ENV KRB5_KTNAME=/etc/krb5.keytab
+
+    """version < 1.0 """
     from pystellardb import stellar_hive
 
     conn = stellar_hive.StellarConnection(host="localhost", port=10000, kerberos_service_name='hive', auth='KERBEROS', graph_name='pokemon')
@@ -74,6 +96,13 @@ Kerberos Mode
 
     print cur.fetchall()
 
+    """version >= 1.0 """
+    from pystellardb import Connection, Graph
+    conn = stellar_hive.StellarConnection(host="localhost", port=10000, kerberos_service_name='hive', auth='KERBEROS')
+    graph = Graph('pokemon', conn)
+    query_result = graph.execute('match p = (a)-[f]->(b) return a,f,b limit 1')
+    for row in query_result:
+        print(row[0].toJSON(), row[1].toJSON(), row[2].toJSON())
 
 Execute Hive Query
 ------------------
@@ -90,7 +119,7 @@ Execute Hive Query
 Execute Graph Query and change to a PySpark RDD object
 ------------------------------------------------------
 .. code-block:: python
-
+    """version < 1.0 """
     from pyspark import SparkContext
     from pystellardb import stellar_hive
     
@@ -103,6 +132,22 @@ Execute Graph Query and change to a PySpark RDD object
     cur.execute('match p = (a)-[f]->(b) return a,f,b limit 10')
 
     rdd = cur.toRDD(sc)
+
+    def f(x): print(x)
+
+    rdd.map(lambda x: (x[0].toJSON(), x[1].toJSON(), x[2].toJSON())).foreach(f)
+
+    """version >= 1.0 """
+    from pyspark import SparkContext
+    from pystellardb import Connection, Graph
+    
+    sc = SparkContext("local", "Demo App")
+
+
+    conn = stellar_hive.StellarConnection(host="localhost", port=10000)
+    graph = Graph('pokemon', conn)
+    query_result = graph.execute('match p = (a)-[f]->(b) return a,f,b limit 1')
+    rdd = query_result.toRDD(sc)
 
     def f(x): print(x)
 
@@ -139,9 +184,9 @@ Dependencies
 Required:
 ------------
 
-- Python 2.7+ / Python 3
+- Python 3.6+
 
-System SASL
+System SASL(Depricated since 1.0):
 ------------
 
 Ubuntu:
@@ -149,14 +194,14 @@ Ubuntu:
 .. code-block:: bash
 
     apt-get install libsasl2-dev libsasl2-2 libsasl2-modules-gssapi-mit
-    apt-get install python-dev gcc              #Update python and gcc if needed
+    apt-get install python3-dev gcc              #Update python and gcc if needed
 
 RHEL/CentOS:
 
 .. code-block:: bash
 
     yum install cyrus-sasl-md5 cyrus-sasl-plain cyrus-sasl-gssapi cyrus-sasl-devel
-    yum install gcc-c++ python-devel.x86_64     #Update python and gcc if needed
+    yum install gcc-c++ python3-devel.x86_64     #Update python and gcc if needed
 
     # if pip3 install fails with a message like 'Can't connect to HTTPS URL because the SSL module is not available'
     # you may need to update ssl & reinstall python

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import platform
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import versioneer
@@ -31,7 +32,7 @@ setup(
     author="Zhiping Wang",
     author_email="zhiping.wang@transwarp.io",
     license="Apache License, Version 2.0",
-    python_requires='>=2.7',
+    python_requires='>=3.6',
     packages=find_packages(),
     classifiers=[
         "Intended Audience :: Developers",
@@ -42,17 +43,12 @@ setup(
     install_requires=[
         'future',
         'python-dateutil',
-        'pyhive',
-        'sasl',
-        'thrift',
-        'thrift-sasl>=0.3.0'
+        'pyhive[hive_pure_sasl]',
+        'thrift>=0.10.0',
     ],
     extras_require={
-        'presto': ['requests>=1.0.0'],
-        'hive': ['sasl>=0.2.1', 'thrift>=0.10.0'],
-        'sqlalchemy': ['sqlalchemy>=1.3.0'],
-        'kerberos': ['requests_kerberos>=0.12.0'],
-        'pyspark': ['pyspark>=2.4.0']
+        'pyspark': ['pyspark>=2.4.0'],
+        'kerberos': ['kerberos>=1.3.0'],
     },
     tests_require=[
         'mock>=1.0.0',
@@ -60,9 +56,6 @@ setup(
         'pytest-cov',
         'requests>=1.0.0',
         'requests_kerberos>=0.12.0',
-        'sasl>=0.2.1',
-        'sqlalchemy>=1.3.0',
-        'thrift>=0.10.0',
     ],
     package_data={
         '': ['*.rst'],
