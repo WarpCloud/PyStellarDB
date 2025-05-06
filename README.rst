@@ -50,6 +50,7 @@ PLAIN Mode (No security is configured)
 LDAP Mode
 ---------
 .. code-block:: python
+
     """version < 1.0 """
     from pystellardb import stellar_hive
 
@@ -119,6 +120,7 @@ Execute Hive Query
 Execute Graph Query and change to a PySpark RDD object
 ------------------------------------------------------
 .. code-block:: python
+
     """version < 1.0 """
     from pyspark import SparkContext
     from pystellardb import stellar_hive
@@ -187,7 +189,7 @@ Required:
 - Python 3.6+
 
 System SASL(Depricated since 1.0):
-------------
+----------------------------------
 
 Ubuntu:
 
