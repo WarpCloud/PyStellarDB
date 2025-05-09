@@ -238,6 +238,7 @@ class Connection(object):
             assert response.serverProtocolVersion == protocol_version, \
                 "Unable to handle protocol version {}".format(response.serverProtocolVersion)
             
+            self.__init__connection()
         except:
             self._transport.close()
             raise
@@ -249,6 +250,9 @@ class Connection(object):
     def __exit__(self, exc_type, exc_value, traceback):
         """Call close"""
         self.close()
+
+    def __init__connection(self):
+        self.execute("config query.lang cypher")
 
     @property
     def client(self):

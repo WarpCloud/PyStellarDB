@@ -43,8 +43,6 @@ class Graph(object):
         Initialize the connection to the database.
         """
         
-        self.connection.execute('config query.lang cypher')
-        
         """Try to bind cursor with graph name."""
         try:
             self.connection.execute(f'use graph {self.graph_name}')
